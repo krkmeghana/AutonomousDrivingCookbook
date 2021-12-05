@@ -134,8 +134,9 @@ def saveH5pyData(data_mappings, target_file_path):
     Saves H5 data to file
     """
     chunk_size = 32
-    gen = generatorForH5py(data_mappings,chunk_size)
-    try: 
+    try:
+        gen = generatorForH5py(data_mappings,chunk_size)
+     
         image_names_chunk, labels_chunk, previous_state_chunk = next(gen)
     except:
         pass
@@ -162,21 +163,23 @@ def saveH5pyData(data_mappings, target_file_path):
         dset_images[:] = images_chunk
         dset_labels[:] = labels_chunk
         dset_previous_state[:] = previous_state_chunk
-
-        for image_names_chunk, label_chunk, previous_state_chunk in gen:
-            image_chunk = np.asarray(readImagesFromPath(image_names_chunk))
+        try:
+            for image_names_chunk, label_chunk, previous_state_chunk in gen:
+                image_chunk = np.asarray(readImagesFromPath(image_names_chunk))
             
-            # Resize the dataset to accommodate the next chunk of rows
-            dset_images.resize(row_count + image_chunk.shape[0], axis=0)
-            dset_labels.resize(row_count + label_chunk.shape[0], axis=0)
-            dset_previous_state.resize(row_count + previous_state_chunk.shape[0], axis=0)
-            # Write the next chunk
-            dset_images[row_count:] = image_chunk
-            dset_labels[row_count:] = label_chunk
-            dset_previous_state[row_count:] = previous_state_chunk
-
-            # Increment the row count
-            row_count += image_chunk.shape[0]
+                # Resize the dataset to accommodate the next chunk of rows
+                dset_images.resize(row_count + image_chunk.shape[0], axis=0)
+                dset_labels.resize(row_count + label_chunk.shape[0], axis=0)
+                dset_previous_state.resize(row_count + previous_state_chunk.shape[0], axis=0)
+                # Write the next chunk
+                dset_images[row_count:] = image_chunk
+                dset_labels[row_count:] = label_chunk
+                dset_previous_state[row_count:] = previous_state_chunk
+                
+                # Increment the row count
+                row_count += image_chunk.shape[0]
+        except:
+            pass
             
             
 def cook(folders, output_directory, train_eval_test_split):
