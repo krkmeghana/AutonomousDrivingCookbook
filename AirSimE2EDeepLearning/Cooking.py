@@ -135,8 +135,10 @@ def saveH5pyData(data_mappings, target_file_path):
     """
     chunk_size = 32
     gen = generatorForH5py(data_mappings,chunk_size)
-
-    image_names_chunk, labels_chunk, previous_state_chunk = next(gen)
+    try: 
+        image_names_chunk, labels_chunk, previous_state_chunk = next(gen)
+    except:
+        pass
     images_chunk = np.asarray(readImagesFromPath(image_names_chunk))
     row_count = images_chunk.shape[0]
 
